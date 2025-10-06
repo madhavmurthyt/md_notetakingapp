@@ -1,0 +1,21 @@
+{
+  "name": "md_notetakingapp",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^5.1.0",
+    "gramma": "^1.6.0",
+    "languagetool-api": "^1.1.2",
+    "multer": "^2.0.2",
+    "path": "^0.12.7",
+    "write-good": "^1.0.8"
+  }
+}
