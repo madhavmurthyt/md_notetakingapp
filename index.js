@@ -34,14 +34,18 @@ app.post('/api/grammer-check', upload.single('markdown'), async(req, res) => {
 // with fields filename and content
 // save the content to a file named filename in data/ directory
 
-app.post('/api/notes', upload.none(), async (req, res) => {
-    const { filename, content } = req.body;
-    if (!filename || !content) {
-        return res.status(400).json({ error: 'Filename and content are required' });
+app.post('/api/notes', upload.single('markdown'), async (req, res) => {
+    if(!req.file) {
+        return res.status(400).json({ error: 'No file uploaded' });
+    }
+
+    if(!req.file.originalname.endsWith('.md')) {
+         return res.status(500).json({ error: 'Only markdown (.md) files are allowed' });
     }
     const fs = await import('fs/promises');
+    
     try {
-        await fs.writeFile(`data/${filename}`, content);
+        await fs.rename(req.file.path, `data/${req.file.originalname}`);
         return res.json({ message: 'Note saved successfully' });
     } catch (error) {
         return res.status(500).json({ error: 'Error saving note' });
