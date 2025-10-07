@@ -13,11 +13,29 @@ const app = express();
 const PORT = 3099;
 app.use(express.json());
 
+const NOTES_DIR = path.join(__dirname, 'data');
+const TEMP_UPLOAD = path.join(__dirname, 'uploads');
 
-const upload = multer({dest: 'uploads/' });
+const METADATA_FILE = path.join(NOTES_DIR, 'metadata.json');
+async function initialize() {
+    const fs = await import('fs/promises');
+    try {
+        await fs.mkdir(NOTES_DIR, { recursive: true });
+        await fs.mkdir(TEMP_UPLOAD, { recursive: true });
+        try {
+            await fs.access(METADATA_FILE);
+        } catch {
+            await fs.writeFile(METADATA_FILE, JSON.stringify([]));
+        }
+    } catch (error) {
+        console.error('Error initializing notes directory:', error);
+    }
+}
+initialize();
+
+const upload = multer({dest: TEMP_UPLOAD});
 // Route to serve the main HTML file
 app.post('/api/grammer-check', upload.single('markdownFile'), async(req, res) => {
-    
     if(!req.file) {
         return res.status(400).json({ error: 'No file uploaded' });
     }
@@ -40,22 +58,7 @@ app.post('/api/grammer-check', upload.single('markdownFile'), async(req, res) =>
 // with fields filename and content
 // save the content to a file named filename in data/ directory
 
-const NOTES_DIR = path.join(__dirname, 'data');
-const METADATA_FILE = path.join(NOTES_DIR, 'metadata.json');
-async function initialize() {
-    const fs = await import('fs/promises');
-    try {
-        await fs.mkdir(NOTES_DIR, { recursive: true });
-        try {
-            await fs.access(METADATA_FILE);
-        } catch {
-            await fs.writeFile(METADATA_FILE, JSON.stringify([]));
-        }
-    } catch (error) {
-        console.error('Error initializing notes directory:', error);
-    }
-}
-initialize();
+
 
 
 app.post('/api/notes', upload.single('markdownFile'), async (req, res) => {
@@ -121,7 +124,7 @@ app.get('/api/notes/:id/html', async (req, res) => {
         const metadata = JSON.parse(await fs.readFile(METADATA_FILE, 'utf-8'));
         const note = metadata.find(n => n.id === req.params.id);
         const id = req.params.id;
-        
+
         if (!note) {
             return res.status(404).json({ error: 'Note not found' });
         }
