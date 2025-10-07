@@ -12,10 +12,14 @@
   "license": "ISC",
   "dependencies": {
     "express": "^5.1.0",
+    "fs": "^0.0.1-security",
     "gramma": "^1.6.0",
     "languagetool-api": "^1.1.2",
+    "marked": "^16.4.0",
     "multer": "^2.0.2",
     "path": "^0.12.7",
+    "url": "^0.11.4",
+    "uuid": "^13.0.0",
     "write-good": "^1.0.8"
   }
 }
